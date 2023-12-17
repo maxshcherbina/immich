@@ -446,6 +446,9 @@ export class PersonService {
   async mergePerson(auth: AuthDto, id: string, dto: MergePersonDto): Promise<MergePersonResponseDto> {
     const smartMerge = dto.smartMerge === undefined ? true : dto.smartMerge;
     const mergeIds = dto.ids;
+    if (!(mergeIds instanceof Array)) {
+      throw new BadRequestException('ids is not an array');
+    }
     await this.access.requirePermission(auth, Permission.PERSON_WRITE, id);
     let primaryPerson = await this.findOrFail(id);
     const primaryName = primaryPerson.name || primaryPerson.id;
