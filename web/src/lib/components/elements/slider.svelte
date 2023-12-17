@@ -9,6 +9,7 @@
 </script>
 
 <div class="flex place-items-center justify-between">
+  <slot name="leading" />
   <label class="relative inline-block h-[10px] w-[36px] flex-none">
     <input
       class="disabled::cursor-not-allowed h-0 w-0 opacity-0"
