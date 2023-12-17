@@ -4353,10 +4353,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/BulkIdResponseDto"
-                  },
-                  "type": "array"
+                  "$ref": "#/components/schemas/MergePersonResponseDto"
                 }
               }
             },
@@ -8081,10 +8078,32 @@
               "type": "string"
             },
             "type": "array"
+          },
+          "smartMerge": {
+            "default": true,
+            "type": "boolean"
           }
         },
         "required": [
           "ids"
+        ],
+        "type": "object"
+      },
+      "MergePersonResponseDto": {
+        "properties": {
+          "person": {
+            "$ref": "#/components/schemas/PersonResponseDto"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/BulkIdResponseDto"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "person",
+          "results"
         ],
         "type": "object"
       },

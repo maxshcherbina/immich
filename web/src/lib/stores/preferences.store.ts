@@ -41,6 +41,8 @@ export const videoViewerVolume = persisted<number>('video-viewer-volume', 1, {})
 
 export const isShowDetail = persisted<boolean>('info-opened', false, {});
 
+export const smartMergeEnabled = persisted<boolean>('smart-merge', false, {});
+
 export interface AlbumViewSettings {
   sortBy: string;
   sortDesc: boolean;

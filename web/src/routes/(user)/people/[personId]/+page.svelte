@@ -72,6 +72,7 @@
   let potentialMergePeople: PersonResponseDto[] = [];
 
   let refreshAssetGrid = false;
+  let refreshPersonName = false;
 
   let personName = '';
   $: thumbnailData = api.getPeopleThumbnailUrl(data.person.id);
@@ -185,8 +186,11 @@
     }
   };
 
-  const handleMerge = () => {
+  const handleMerge = (person: PersonResponseDto) => {
     handleGoBack();
+
+    data.person = person;
+
     refreshAssetGrid = !refreshAssetGrid;
   };
 
@@ -214,14 +218,17 @@
     }
   };
 
-  const handleMergeSamePerson = async (response: [PersonResponseDto, PersonResponseDto]) => {
-    const [personToMerge, personToBeMergedIn] = response;
+  const handleMergeSamePerson = async (response: {
+    people: [PersonResponseDto, PersonResponseDto];
+    smartMerge: boolean;
+  }) => {
+    const [personToMerge, personToBeMergedIn] = response.people;
     viewMode = ViewMode.VIEW_ASSETS;
     isEditingName = false;
     try {
       await api.personApi.mergePerson({
         id: personToBeMergedIn.id,
-        mergePersonDto: { ids: [personToMerge.id] },
+        mergePersonDto: { ids: [personToMerge.id], smartMerge: response.smartMerge },
       });
       notificationController.show({
         message: 'Merge people succesfully',
@@ -374,7 +381,7 @@
 {/if}
 
 {#if viewMode === ViewMode.MERGE_PEOPLE}
-  <MergeFaceSelector person={data.person} on:back={handleGoBack} on:merge={handleMerge} />
+  <MergeFaceSelector person={data.person} on:back={handleGoBack} on:merge={({ detail }) => handleMerge(detail)} />
 {/if}
 
 <header>
@@ -442,13 +449,15 @@
         >
           <section class="flex w-64 sm:w-96 place-items-center border-black">
             {#if isEditingName}
-              <EditNameInput
-                person={data.person}
-                suggestedPeople={suggestedPeople.length > 0 || isSearchingPeople}
-                bind:name
-                on:change={(event) => handleNameChange(event.detail)}
-                on:input={searchPeople}
-              />
+              {#key refreshPersonName}
+                <EditNameInput
+                  person={data.person}
+                  suggestedPeople={suggestedPeople.length > 0 || isSearchingPeople}
+                  bind:name
+                  on:change={(event) => handleNameChange(event.detail)}
+                  on:input={searchPeople}
+                />
+              {/key}
             {:else}
               <div class="relative">
                 <button

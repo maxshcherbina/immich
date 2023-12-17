@@ -17,6 +17,8 @@
   import CircleIconButton from '../elements/buttons/circle-icon-button.svelte';
   import PeopleList from './people-list.svelte';
   import { page } from '$app/stores';
+  import SmartMerge from './smart-merge.svelte';
+  import { smartMergeEnabled } from '$lib/stores/preferences.store';
 
   export let person: PersonResponseDto;
   let people: PersonResponseDto[] = [];
@@ -26,7 +28,7 @@
 
   let dispatch = createEventDispatcher<{
     back: void;
-    merge: void;
+    merge: PersonResponseDto;
   }>();
 
   $: hasSelection = selectedPeople.length > 0;
@@ -68,16 +70,16 @@
 
   const handleMerge = async () => {
     try {
-      const { data: results } = await api.personApi.mergePerson({
+      const { data } = await api.personApi.mergePerson({
         id: person.id,
-        mergePersonDto: { ids: selectedPeople.map(({ id }) => id) },
+        mergePersonDto: { ids: selectedPeople.map(({ id }) => id), smartMerge: $smartMergeEnabled },
       });
-      const count = results.filter(({ success }) => success).length;
+      const count = data.results.filter(({ success }) => success).length;
       notificationController.show({
         message: `Merged ${count} ${count === 1 ? 'person' : 'people'}`,
         type: NotificationType.Info,
       });
-      dispatch('merge');
+      dispatch('merge', data.person);
     } catch (error) {
       handleError(error, 'Cannot merge people');
     } finally {
@@ -150,7 +152,14 @@
         unselectedPeople={selectedPeople}
         {screenHeight}
         on:select={({ detail }) => onSelect(detail)}
-      />
+        ><svelte:fragment slot="button">
+          {#if selectedPeople.length <= 1}
+            <div class="flex items-center text-white">
+              <SmartMerge />
+            </div>
+          {/if}
+        </svelte:fragment>
+      </PeopleList>
     </section>
 
     {#if isShowConfirmation}

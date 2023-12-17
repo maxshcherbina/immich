@@ -151,18 +151,30 @@
     toggleVisibility = false;
   };
 
-  const handleMergeSamePerson = async (response: [PersonResponseDto, PersonResponseDto]) => {
-    const [personToMerge, personToBeMergedIn] = response;
+  const handleMergeSamePerson = async (response: {
+    people: [PersonResponseDto, PersonResponseDto];
+    smartMerge: boolean;
+  }) => {
+    const [personToMerge, personToBeMergedIn] = response.people;
     showMergeModal = false;
 
     if (!edittingPerson) {
       return;
     }
     try {
-      await api.personApi.mergePerson({
+      const { data } = await api.personApi.mergePerson({
         id: personMerge2.id,
-        mergePersonDto: { ids: [personToMerge.id] },
+        mergePersonDto: { ids: [personToMerge.id], smartMerge: response.smartMerge },
       });
+      if (data.person.birthDate != personMerge2.birthDate) {
+        for (const person of people) {
+          if (person.id === data.person.id) {
+            person.birthDate = data.person.birthDate;
+            break;
+          }
+        }
+      }
+
       countVisiblePeople--;
       people = people.filter((person: PersonResponseDto) => person.id !== personToMerge.id);
 

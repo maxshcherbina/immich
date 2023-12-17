@@ -7,10 +7,12 @@
   import CircleIconButton from '../elements/buttons/circle-icon-button.svelte';
   import { mdiArrowLeft, mdiClose, mdiMerge } from '@mdi/js';
   import Icon from '$lib/components/elements/icon.svelte';
+  import SmartMerge from './smart-merge.svelte';
+  import { smartMergeEnabled } from '$lib/stores/preferences.store';
 
   const dispatch = createEventDispatcher<{
     reject: void;
-    confirm: [PersonResponseDto, PersonResponseDto];
+    confirm: { people: [PersonResponseDto, PersonResponseDto]; smartMerge: boolean };
     close: void;
   }>();
 
@@ -35,14 +37,14 @@
       class="w-[250px] max-w-[125vw] rounded-3xl border bg-immich-bg shadow-sm dark:border-immich-dark-gray dark:bg-immich-dark-gray dark:text-immich-dark-fg md:w-[375px]"
     >
       <div class="relative flex items-center justify-between">
-        <h1 class="truncate px-4 py-4 font-medium text-immich-primary dark:text-immich-dark-primary">
+        <h1 class="truncate font-medium text-immich-primary dark:text-immich-dark-primary px-4 py-4">
           Merge People - {title}
         </h1>
         <div class="p-2">
           <CircleIconButton icon={mdiClose} on:click={() => dispatch('close')} />
         </div>
       </div>
-
+      <SmartMerge />
       <div class="flex items-center justify-center px-2 py-4 md:h-36 md:px-4 md:py-4">
         {#if !choosePersonToMerge}
           <div class="flex h-20 w-20 items-center px-1 md:h-24 md:w-24 md:px-2">
@@ -115,7 +117,11 @@
       </div>
       <div class="mt-8 flex w-full gap-4 px-4 pb-4">
         <Button color="gray" fullwidth on:click={() => dispatch('reject')}>No</Button>
-        <Button fullwidth on:click={() => dispatch('confirm', [personMerge1, personMerge2])}>Yes</Button>
+        <Button
+          fullwidth
+          on:click={() => dispatch('confirm', { people: [personMerge1, personMerge2], smartMerge: $smartMergeEnabled })}
+          >Yes</Button
+        >
       </div>
     </div>
   </div>

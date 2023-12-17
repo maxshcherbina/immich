@@ -14,25 +14,31 @@ class MergePersonDto {
   /// Returns a new [MergePersonDto] instance.
   MergePersonDto({
     this.ids = const [],
+    this.smartMerge = true,
   });
 
   List<String> ids;
 
+  bool smartMerge;
+
   @override
   bool operator ==(Object other) => identical(this, other) || other is MergePersonDto &&
-     other.ids == ids;
+     other.ids == ids &&
+     other.smartMerge == smartMerge;
 
   @override
   int get hashCode =>
     // ignore: unnecessary_parenthesis
-    (ids.hashCode);
+    (ids.hashCode) +
+    (smartMerge.hashCode);
 
   @override
-  String toString() => 'MergePersonDto[ids=$ids]';
+  String toString() => 'MergePersonDto[ids=$ids, smartMerge=$smartMerge]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
       json[r'ids'] = this.ids;
+      json[r'smartMerge'] = this.smartMerge;
     return json;
   }
 
@@ -47,6 +53,7 @@ class MergePersonDto {
         ids: json[r'ids'] is List
             ? (json[r'ids'] as List).cast<String>()
             : const [],
+        smartMerge: mapValueOfType<bool>(json, r'smartMerge') ?? true,
       );
     }
     return null;

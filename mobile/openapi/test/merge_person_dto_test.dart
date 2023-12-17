@@ -21,6 +21,11 @@ void main() {
       // TODO
     });
 
+    // bool smartMerge (default value: true)
+    test('to test the property `smartMerge`', () async {
+      // TODO
+    });
+
 
   });
 
